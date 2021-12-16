@@ -5,8 +5,7 @@ import cv2
 import joblib
 
 
-def read_roi_contour(camera_name):
-    pkl_file_name = 'TedRoiFiles/PolyRoi_' + camera_name + '.pkl'
+def read_roi_contour(pkl_file_name):
     dict_loaded = joblib.load(pkl_file_name)
     pts_loaded = dict_loaded['ROI']
     print("%s ROI points loaded successfully." % pkl_file_name)
@@ -26,12 +25,23 @@ def mymovefile(srcfile, dstfile):
         print("move %s -> %s" % (srcfile, dstfile))
 
 
+def find_any_vehicle(roi_cntr, cates, bboxs, vehicle_type_list):
+    veh_center = np.array([0, 0])
+    for cat_id, cat_name in enumerate(cates):
+        if cat_name in vehicle_type_list:
+            in_roi = cv2.pointPolygonTest(roi_cntr, (bboxs[cat_id][0], bboxs[cat_id][1]+bboxs[cat_id][3]), False)
+            if in_roi != -1:
+                veh_center = [bboxs[cat_id][0]+bboxs[cat_id][2]/2, bboxs[cat_id][1]+bboxs[cat_id][3]/2]
+                break
+    return veh_center
+
+
 def find_vehicle(roi_cntr, cates, bboxs):
     veh_center = np.array([0, 0])
     for cat_id, cat_name in enumerate(cates):
         if cat_name == 'bus' or cat_name == 'truck':
             in_roi = cv2.pointPolygonTest(roi_cntr, (bboxs[cat_id][0], bboxs[cat_id][1]+bboxs[cat_id][3]), False)
-            if in_roi == 1 or in_roi == 0:
+            if in_roi != -1:
                 veh_center = [bboxs[cat_id][0]+bboxs[cat_id][2]/2, bboxs[cat_id][1]+bboxs[cat_id][3]/2]
                 break
     return veh_center
@@ -48,7 +58,7 @@ def calcu_person_distances(veh_center, cates, bboxs):
 
 def get_check_status(roi_cntr, cates, bboxs):
     veh_center = find_vehicle(roi_cntr, cates, bboxs)
-    if veh_center[0] == 0 and veh_center[1] == 0:
+    if np.count_nonzero(veh_center) == 0:
         result = '0'
     else:
         if 'person' not in cates:

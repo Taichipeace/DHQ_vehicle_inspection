@@ -90,7 +90,7 @@ trainer.load_weights(weights)
 output_path = 'PPdetOutput/'
 
 # 读取保存到pkl文件的pts列表
-roi_HongDa_in_2nd = read_roi_contour('HongDa_in_2nd')
+roi_HongDa_in_2nd = read_roi_contour('TedRoiFiles/PolyRoi_192.168.10.11_2nd.pkl')
 
 while True:
     try:
@@ -164,7 +164,9 @@ while True:
                                         "path": "http://211.103.164.196:9080/http/" + ip_dir + "/" + img_name,
                                         "car": car_info[0],
                                         "des": car_info[1],
-                                        "check": '2'}
+                                        "check": '2',
+                                        "cflag": car_info[2]
+                                    }
                                     print(data)
                                     if post_trigger:
                                         post_result = requests.post(url=post_url, data=data)
