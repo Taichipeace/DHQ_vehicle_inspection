@@ -23,8 +23,8 @@ def draw_roi(event, x, y, flags, param):
     img2 = img.copy()
 
     if event == cv2.EVENT_LBUTTONDOWN:  # 左键点击，选择点
-        # pts.append((x, y))
-        pts.append([x, y])  # Ted modified
+        pts.append((x, y))
+        # pts.append([x, y])  # Ted modified
 
     if event == cv2.EVENT_RBUTTONDOWN:  # 右键点击，取消最近一次选择的点
         pts.pop()
@@ -92,7 +92,7 @@ pts_loaded = dict_loaded['ROI']
 print(pts_loaded)
 
 # 判断某个点是否在ROI内部
-point_test = [600, 600]
+point_test = (600, 600)
 roi_contour = np.array(pts_loaded, dtype=np.int32)
 test_result = cv2.pointPolygonTest(roi_contour, point_test, False)
 print(test_result)
