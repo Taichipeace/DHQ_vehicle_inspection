@@ -61,7 +61,7 @@ def get_stream_url(strm_prefix, t0_full):
 
 
 # 推送数据到数据库的开关
-post_trigger = False
+post_trigger = True
 
 # 移动图片的开关
 move_file_trigger = True
@@ -187,7 +187,9 @@ while True:
                                             + ip_dir + "_01_" + t0_dir + "_VEHICLE_DETECTION.jpg",
                                     "car": car_info[0],
                                     "des": car_info[1],
-                                    "check": '1'}
+                                    "check": '1',
+                                    "cflag": car_info[2]
+                                }
                                 print(data)
                                 if post_trigger:
                                     post_result = requests.post(url=post_url, data=data)
