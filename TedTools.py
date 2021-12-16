@@ -8,7 +8,7 @@ import joblib
 def read_roi_contour(pkl_file_name):
     dict_loaded = joblib.load(pkl_file_name)
     pts_loaded = dict_loaded['ROI']
-    print("%s ROI points loaded successfully." % pkl_file_name)
+    # print("%s ROI points loaded successfully." % pkl_file_name)
     # print(pts_loaded)
     roi_contour = np.array(pts_loaded, dtype=np.int32)
     return roi_contour

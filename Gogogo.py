@@ -148,9 +148,11 @@ double_check_dir = "D:/workpath/ftp_double_check/"
 while 1:
     ip_dir_list = os.listdir(ftp_dir)
     for ip_dir in ip_dir_list:
+        print(f'================= Begin to process {ftp_dir}{ip_dir} ============================')
         ip_dir_fullpath = ftp_dir + ip_dir
         # 读取保存到pkl文件的pts列表
         roi_contour = read_roi_contour(f'TedRoiFiles/PolyRoi_{ip_dir}_1st.pkl')
+        print(f'ROI points loaded successfully: TedRoiFiles/PolyRoi_{ip_dir}_1st.pkl')
         if os.path.isdir(ip_dir_fullpath):
             img_name_list = os.listdir(ip_dir_fullpath)
             # print("dir:"+ip_dir_fullpath)
@@ -161,7 +163,7 @@ while 1:
                         mymovefile(img_fullpath, done_fullpath)
                     continue
                 try:
-                    print("================= Processing new image ============================")
+                    print("================= Processing new image ")
                     img_fullpath = ip_dir_fullpath + "/" + img_name
                     print("Current image: " + img_fullpath)
                     done_fullpath = http_dir + ip_dir + "/" + img_name
