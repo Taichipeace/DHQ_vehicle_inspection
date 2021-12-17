@@ -17,6 +17,12 @@
 # ATAI 更新日志 2021.12.11 08：59
 # 新增处理初次检查为’应查未查‘的二次检查分支
 #
+# ATAI 更新日志 2021.12.17 09：00
+# # 以下2行 2021.12.17日 Ted 添加，为解决truncated image问题
+# # venv/Lib/site-packages/paddledet-2.3.0-py3.9.egg/ppdet/engine/trainer.py
+# from PIL import ImageFile
+# ImageFile.LOAD_TRUNCATED_IMAGES = True
+#
 # ============================================================
 # ================== 注意推送和移动图片的开关状态 ！！！！！==========
 # ============================================================
@@ -106,7 +112,7 @@ def get_ocr_data(ocr_result):
 post_trigger = False
 
 # 是否移动图片的开关
-move_file_trigger = False
+move_file_trigger = True
 
 # POST地址
 url = "http://daxing.smart-ideas.com.cn/inputcarocr.php"
@@ -251,7 +257,7 @@ while 1:
                             if res.text == "success":
                                 mymovefile(img_fullpath, done_fullpath)
                 except:
-                    print("！！！异常错误：" + img_fullpath)
+                    print("！！！文件异常，已跳过：" + img_fullpath)
                     if move_file_trigger:
                         mymovefile(img_fullpath, done_fullpath)
     print("sleep 30s")
