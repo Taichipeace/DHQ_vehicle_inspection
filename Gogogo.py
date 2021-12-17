@@ -163,16 +163,16 @@ while 1:
             img_name_list = os.listdir(ip_dir_fullpath)
             # print("dir:"+ip_dir_fullpath)
             for img_name in img_name_list:
+                print("================= Processing new image ")
+                img_fullpath = ip_dir_fullpath + "/" + img_name
+                print("Current image: " + img_fullpath)
+                done_fullpath = http_dir + ip_dir + "/" + img_name
                 if not (img_name.endswith("DETECTION.jpg")):
                     print("not pic")
                     if move_file_trigger:
                         mymovefile(img_fullpath, done_fullpath)
                     continue
                 try:
-                    print("================= Processing new image ")
-                    img_fullpath = ip_dir_fullpath + "/" + img_name
-                    print("Current image: " + img_fullpath)
-                    done_fullpath = http_dir + ip_dir + "/" + img_name
                     img = cv2.imread(img_fullpath)
                     if img is not None:
                         img_cropped = img[1060:, :]
