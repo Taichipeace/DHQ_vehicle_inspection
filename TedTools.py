@@ -81,7 +81,7 @@ def read_txt(file):
         for line in f:
             datas = list(line.strip('\n').split(' '))
             cates.append(datas[0])
-            confi_val.append(float(datas[1]))
+            confi_val.append(float(datas[-5]))
             blob_box.append(list(map(float, datas[2:])))
     print('Data read from txt. \n')
     return cates, confi_val, blob_box
