@@ -3,23 +3,10 @@
 # 2. 检测致信值阈值调高至 0.65
 
 import requests
-import time
-import datetime
+# import time
+# import datetime
 import ppdet
 from TedTools import *
-
-
-def shift_time(start_time, time_eval):
-    b = datetime.datetime(int(start_time[0:4]),
-                 int(start_time[4:6]),
-                 int(start_time[6:8]),
-                 int(start_time[8:10]),
-                 int(start_time[10:12]),
-                 int(start_time[12:14]),
-                 int(start_time[14:])*1000)
-    c = b + datetime.timedelta(seconds=time_eval)
-    d = datetime.datetime.strftime(c, "%Y%m%d%H%M%S%f")
-    return d[0:17]
 
 
 def get_check_imgs(strm_prefix, t0_full):
@@ -34,8 +21,8 @@ def get_check_imgs(strm_prefix, t0_full):
         if strm.isOpened():
             break
         else:
-            print("所需的二次检查视频尚未生成，等待25秒后自动重试")
-            time.sleep(25)
+            print(f"所需的二次检查视频尚未生成，等待5秒后自动重试: {time_start}")
+            time.sleep(5)
     strm_fps = strm.get(cv2.CAP_PROP_FPS)
     ret, frame = strm.read()
     i = 0
@@ -61,7 +48,7 @@ def get_stream_url(strm_prefix, t0_full):
 
 
 # 推送数据到数据库的开关
-post_trigger = True
+post_trigger = False
 
 # 移动图片的开关
 move_file_trigger = True
@@ -95,13 +82,12 @@ roi_HongDa_in_2nd = read_roi_contour('TedRoiFiles/PolyRoi_192.168.10.11_2nd.pkl'
 while True:
     try:
         if not os.path.exists(double_check_dir):  # 如果ftp_double_check文件夹下还没有ip摄像头文件夹
-            print("IP摄像头文件夹： %s 是空的，等30秒再来" % double_check_dir)
+            print(f"IP摄像头文件夹： {double_check_dir} 是空的，等30秒再来")
         else:
             ip_dir_list = os.listdir(double_check_dir)  # 获取ip摄像头文件夹列表
             for ip_dir in ip_dir_list:
                 if not os.listdir(double_check_dir+ip_dir):  # 如果192.168.x.x文件夹下还没有t0文件夹
-                    print("t0文件夹： %s 是空的，等30秒再来" % double_check_dir+ip_dir)
-                    time.sleep(30)
+                    print(f"t0文件夹：{double_check_dir+ip_dir} 是空的，等30秒再来")
                 else:
                     t0_dir_list = os.listdir(double_check_dir+ip_dir)  # 获取t0文件夹列表
                     for t0_dir in t0_dir_list:
@@ -109,7 +95,7 @@ while True:
                         # stream_url = get_stream_url(stream_prefix, img_dir_full)
                         img_list = os.listdir(img_dir_full)  # 获取t0_rep里的图片列表
                         if len(img_list) == 2:  # 此时文件夹内只有刚刚复制过来的初次检查图片和car_info.txt
-                            print("开始下载图片。。。")
+                            print(f"{t0_dir}开始下载图片。。。")
                             get_check_imgs(stream_prefix, img_dir_full)
                         else:
                             for img_name in img_list:
