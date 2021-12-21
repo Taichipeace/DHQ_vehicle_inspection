@@ -3,7 +3,8 @@ import shutil
 import numpy as np
 import cv2
 import joblib
-
+import time
+import datetime
 
 def read_roi_contour(pkl_file_name):
     dict_loaded = joblib.load(pkl_file_name)
@@ -85,3 +86,16 @@ def read_txt(file):
             blob_box.append(list(map(float, datas[2:])))
     print('Data read from txt. \n')
     return cates, confi_val, blob_box
+
+
+def shift_time(start_time, time_eval):
+    b = datetime.datetime(int(start_time[0:4]),
+                 int(start_time[4:6]),
+                 int(start_time[6:8]),
+                 int(start_time[8:10]),
+                 int(start_time[10:12]),
+                 int(start_time[12:14]),
+                 int(start_time[14:])*1000)
+    c = b + datetime.timedelta(seconds=time_eval)
+    d = datetime.datetime.strftime(c, "%Y%m%d%H%M%S%f")
+    return d[0:17]
