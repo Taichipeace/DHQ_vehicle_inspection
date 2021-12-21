@@ -3,8 +3,6 @@
 # 2. 检测致信值阈值调高至 0.65
 
 import requests
-# import time
-# import datetime
 import ppdet
 from TedTools import *
 

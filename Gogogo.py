@@ -112,7 +112,7 @@ def get_ocr_data(ocr_result):
 post_trigger = False
 
 # 是否移动图片的开关
-move_file_trigger = True
+move_file_trigger = False
 
 # POST地址
 url = "http://daxing.smart-ideas.com.cn/inputcarocr.php"
