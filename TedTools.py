@@ -40,7 +40,7 @@ def find_any_vehicle(roi_cntr, cates, bboxs, vehicle_type_list):
 def find_vehicle(roi_cntr, cates, bboxs):
     veh_center = np.array([0, 0])
     for cat_id, cat_name in enumerate(cates):
-        if cat_name == 'bus' or cat_name == 'truck':
+        if cat_name == 'bus' or cat_name == 'truck' or cat_name == 'car':
             in_roi = cv2.pointPolygonTest(roi_cntr, (bboxs[cat_id][0], bboxs[cat_id][1]+bboxs[cat_id][3]), False)
             if in_roi != -1:
                 veh_center = [bboxs[cat_id][0]+bboxs[cat_id][2]/2, bboxs[cat_id][1]+bboxs[cat_id][3]/2]
