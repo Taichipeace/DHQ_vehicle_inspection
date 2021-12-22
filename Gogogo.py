@@ -193,6 +193,14 @@ while 1:
                         categories = []
                         categories, confident_val, bbox = read_txt(output_file)
 
+                        # # ROI区域可视化
+                        # cv2.drawContours(img, [roi_contour], -1, (0, 255, 0), 3)
+                        # cv2.namedWindow('ROI', cv2.WINDOW_NORMAL)
+                        # cv2.resizeWindow('ROI', 500, 500)
+                        # cv2.imshow('ROI', img)
+                        # cv2.waitKey()
+                        # cv2.destroyAllWindows()
+
                         # 判断ROI区域内是否有车
                         vehicle_center = find_any_vehicle(roi_contour, categories, bbox, ['car', 'bus', 'truck'])
                         if np.count_nonzero(vehicle_center) == 0:
