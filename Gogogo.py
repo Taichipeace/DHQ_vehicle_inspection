@@ -41,40 +41,14 @@ def make_t0_dir(t0_path):
 
 
 def get_ocr_data(ocr_result):
-    txt = []
+    car_licence_type = ['', '']
     for content in ocr_result:
-        txt.append(content[1][0])
-        # print(content)
-    # print(txt)
+        if '牌号' in content[1][0]:
+            car_licence_type[0] = content[1][0][6:]
+        elif '类型' in content[1][0]:
+            car_licence_type[1] = content[1][0][3:]
 
-    # 把结果list转换成str
-    Alltxt = ''.join(txt)
-    print(Alltxt)
-
-    # 提取车牌号码
-    # 定位车牌起始位置
-    if '牌' in Alltxt:
-       LP_start_indx = Alltxt.find('牌') + 4
-    # 定位车牌结束位置
-    if '颜' in Alltxt:
-        LP_end_indx = Alltxt.find('颜') - 2
-    # 当有车牌时，去掉车牌颜色那个字符
-    if (LP_end_indx - LP_start_indx) > 3:
-        LP_start_indx = LP_start_indx + 1
-
-    # 提取车辆类型
-    if Alltxt.find('类型：') >= 0:
-        Type_start_indx = Alltxt.find('类型：') + 3
-    else:
-        Type_start_indx = Alltxt.find('类型') + 2
-    Type_end_indx = Alltxt.find('品牌')
-
-    # 构建输出list
-    car_licence_type = list()
-    car_licence_type.append(Alltxt[LP_start_indx:LP_end_indx])
-    car_licence_type.append(Alltxt[Type_start_indx:Type_end_indx])
-
-    # 矫正识别错字产生的偏差
+    # 规范化车辆类型的输出
     if '软' in car_licence_type[1]:
         car_licence_type[1] = '轿车'
     elif '轿' in car_licence_type[1]:
@@ -95,10 +69,14 @@ def get_ocr_data(ocr_result):
         car_licence_type[1] = '皮卡'
     else:
         car_licence_type[1] = '其他'
-    # 提取的车牌号超过8位或不足6位，则有异常，按‘无车牌’输出
-    if len(car_licence_type[0]) > 8 or len(car_licence_type[0]) < 6:
-        car_licence_type[0] = '无车牌'
-    # 如果车辆类型位数超过10位或空，则按‘无’类型输出
+
+    # 矫正识别错字产生的偏差
+    car_licence_type[0] = car_licence_type[0].replace('"', 'Y')
+
+    # # 提取的车牌号超过8位或不足6位，则有异常，按‘无车牌’输出
+    # if len(car_licence_type[0]) > 8 or len(car_licence_type[0]) < 6:
+    #     car_licence_type[0] = '无车牌'
+    # 如果车辆类型位数超过10位或空，则按‘其他’类型输出
     if len(car_licence_type[1]) > 10 or len(car_licence_type[1]) < 1:
         car_licence_type[1] = '其他'
 
@@ -193,13 +171,13 @@ while 1:
                         categories = []
                         categories, confident_val, bbox = read_txt(output_file)
 
-                        # # ROI区域可视化
-                        # cv2.drawContours(img, [roi_contour], -1, (0, 255, 0), 3)
-                        # cv2.namedWindow('ROI', cv2.WINDOW_NORMAL)
-                        # cv2.resizeWindow('ROI', 500, 500)
-                        # cv2.imshow('ROI', img)
-                        # cv2.waitKey()
-                        # cv2.destroyAllWindows()
+                        # ROI区域可视化
+                        cv2.drawContours(img, [roi_contour], -1, (0, 255, 0), 3)
+                        cv2.namedWindow('ROI', cv2.WINDOW_NORMAL)
+                        cv2.resizeWindow('ROI', 500, 500)
+                        cv2.imshow('ROI', img)
+                        cv2.waitKey()
+                        cv2.destroyAllWindows()
 
                         # 判断ROI区域内是否有车
                         vehicle_center = find_any_vehicle(roi_contour, categories, bbox, ['car', 'bus', 'truck'])
