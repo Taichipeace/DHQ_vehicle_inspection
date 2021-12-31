@@ -27,7 +27,6 @@
 # ================== 注意推送和移动图片的开关状态 ！！！！！==========
 # ============================================================
 import requests
-import time
 from paddleocr import PaddleOCR
 import ppdet
 from TedTools import *
@@ -38,57 +37,6 @@ def make_t0_dir(t0_path):
     else:
         os.makedirs(t0_path)
         print("%s dir has been made." % t0_path)
-
-
-# def get_ocr_data(ocr_result):
-#     car_licence_type = ['', '']
-#     for content in ocr_result:
-#         if '无' in content[1][0]:
-#             car_licence_type[0] = '无车牌'
-#         elif '牌号' in content[1][0]:
-#             car_licence_type[0] = content[1][0][6:]
-#         if '类型' in content[1][0]:
-#             car_licence_type[1] = content[1][0][content[1][0].find('类型') + 3:]
-#
-#     # 规范化车辆类型的输出
-#     if '软' in car_licence_type[1]:
-#         car_licence_type[1] = '轿车'
-#     elif '轿' in car_licence_type[1]:
-#         car_licence_type[1] = '轿车'
-#     elif 'MP' in car_licence_type[1]:
-#         car_licence_type[1] = 'SUV/MPV'
-#     elif '大' in car_licence_type[1]:
-#         car_licence_type[1] = '大货车'
-#     elif '小' in car_licence_type[1]:
-#         car_licence_type[1] = '小货车'
-#     elif '货' in car_licence_type[1]:
-#         car_licence_type[1] = '货车'
-#     elif '面' in car_licence_type[1]:
-#         car_licence_type[1] = '面包车'
-#     elif '客' in car_licence_type[1]:
-#         car_licence_type[1] = '客车'
-#     elif '皮卡' in car_licence_type[1]:
-#         car_licence_type[1] = '皮卡'
-#     else:
-#         car_licence_type[1] = '其他'
-#
-#     # 矫正识别错字产生的偏差
-#     car_licence_type[0] = car_licence_type[0].replace('"', 'Y')
-#
-#     # # 提取的车牌号超过8位或不足6位，则有异常，按‘无车牌’输出
-#     # if len(car_licence_type[0]) > 8 or len(car_licence_type[0]) < 6:
-#     #     car_licence_type[0] = '车牌待查'
-#
-#     if '颜' in car_licence_type[0]:
-#         car_licence_type[0] = car_licence_type[0][:car_licence_type[0].find('颜') - 2]
-#     # 如果车辆类型位数超过10位或空，则按‘其他’类型输出
-#     if len(car_licence_type[1]) > 10 or len(car_licence_type[1]) < 1:
-#         car_licence_type[1] = '其他'
-#
-#     # 全部转大写字母
-#     car_licence_type[0] = car_licence_type[0].upper()
-#
-#     return car_licence_type
 
 
 def get_ocr_data_new(ocr_result):
@@ -242,6 +190,10 @@ while 1:
                         output_file = output_path + img_name[:-4] + '.txt'
                         categories = []
                         categories, confident_val, bbox = read_txt(output_file)
+
+                        # 立即删除detection生成的jpg和txt文件
+                        os.remove(output_file)
+                        os.remove(output_path+img_name)
 
                         # # ROI区域可视化
                         # cv2.drawContours(img, [roi_contour], -1, (0, 255, 0), 3)
