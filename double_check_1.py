@@ -46,7 +46,7 @@ def get_stream_url(strm_prefix, t0_full):
 
 
 # 推送数据到数据库的开关
-post_trigger = False
+post_trigger = True
 
 # 移动图片的开关
 move_file_trigger = True
@@ -108,6 +108,11 @@ while True:
                                 # 读取txt文件信息，每一行为一个列表，包含6个元素
                                 output_file = output_path + img_name[:-4] + '.txt'
                                 categories, confident_val, bbox = read_txt(output_file)
+
+                                # 立即删除detection生成的jpg和txt文件
+                                os.remove(output_file)
+                                os.remove(output_path + img_name)
+
                                 # 二次检查的人车位置判断
                                 check_res = get_check_status(roi_HongDa_in_2nd, categories, bbox)
                                 print('check_res = ', check_res)
