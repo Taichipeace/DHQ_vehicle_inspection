@@ -14,14 +14,13 @@
 
 import os
 import cv2
-import math
 import copy
 import numpy as np
 from collections import defaultdict
 import paddle
 
 from utils import get_current_memory_mb
-from infer import Detector, PredictConfig, print_arguments, get_test_images
+from infer import PredictConfig, print_arguments, get_test_images
 from visualize import draw_pose
 
 from mot_keypoint_unite_utils import argsparser
@@ -166,7 +165,10 @@ def mot_keypoint_unite_predict_video(FLAGS,
     assert num_classes == 1, 'Only one category mot model supported for uniting keypoint deploy.'
     data_type = 'mot'
 
-    while (1):
+    move_distance = defaultdict(list)
+    bbox_last_position = defaultdict(list)
+
+    while 1:
         ret, frame = capture.read()
         if not ret:
             break
@@ -178,6 +180,22 @@ def mot_keypoint_unite_predict_video(FLAGS,
         mot_results[0].append(
             (frame_id + 1, online_tlwhs[0], online_scores[0], online_ids[0]))
         mot_fps = 1. / timer_mot.average_time
+
+        if frame_id < 1:
+            all_ids = mot_results[0][0][3]
+            for i, val in enumerate(all_ids):
+                bbox_last_position[val] = mot_results[0][0][1][i][0:2]
+                move_distance[val] = 0
+        else:
+            current_ids = mot_results[0][-1][3]
+            for i, val in enumerate(current_ids):
+                if val in all_ids:
+                    distance = np.sqrt(np.sum(np.square(mot_results[0][-1][1][i][0:2] - bbox_last_position[val])))
+                    move_distance[val] = move_distance[val] + distance
+                else:
+                    move_distance[val] = 0
+                bbox_last_position[val] = mot_results[0][-1][1][i][0:2]
+            all_ids = list(set(all_ids).union(set(mot_results[0][-1][3])))
 
         timer_kp.tic()
 
@@ -192,6 +210,7 @@ def mot_keypoint_unite_predict_video(FLAGS,
         else:
             keypoint_results = keypoint_model.predict([frame],
                                                       FLAGS.keypoint_threshold)
+
         timer_kp.toc()
         timer_mot_kp.toc()
         kp_fps = 1. / timer_kp.average_time
@@ -245,6 +264,8 @@ def mot_keypoint_unite_predict_video(FLAGS,
         print('Save video in {}.'.format(out_path))
     else:
         writer.release()
+
+    return move_distance
 
 
 def main():
