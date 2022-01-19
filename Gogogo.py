@@ -31,6 +31,7 @@ from paddleocr import PaddleOCR
 import ppdet
 from TedTools import *
 
+
 def make_t0_dir(t0_path):
     if os.path.exists(t0_path):
         pass
@@ -107,10 +108,10 @@ def get_ocr_data_new(ocr_result):
 
 
 # 是否推送数据到服务器的开关
-post_trigger = True
+post_trigger = False
 
 # 是否移动图片的开关
-move_file_trigger = True
+move_file_trigger = False
 
 # POST地址
 url = "http://daxing.smart-ideas.com.cn/inputcarocr.php"
@@ -154,12 +155,15 @@ while 1:
     for ip_dir in ip_dir_list:
         print(f'================= Begin to process {ftp_dir}{ip_dir} ============================')
         ip_dir_fullpath = ftp_dir + ip_dir
+        if not os.path.isdir(ip_dir_fullpath) or len(ip_dir) < 12 or len(ip_dir) > 13:
+            print(f'{ip_dir} is not dir or not IP name.')
+            continue
+
         # 读取保存到pkl文件的pts列表
         roi_contour = read_roi_contour(f'TedRoiFiles/PolyRoi_{ip_dir}_1st.pkl')
         print(f'ROI points loaded successfully: TedRoiFiles/PolyRoi_{ip_dir}_1st.pkl')
         if os.path.isdir(ip_dir_fullpath):
             img_name_list = os.listdir(ip_dir_fullpath)
-            # print("dir:"+ip_dir_fullpath)
             for img_name in img_name_list:
                 print("================= Processing new image ")
                 img_fullpath = ip_dir_fullpath + "/" + img_name
